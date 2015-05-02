@@ -1,0 +1,5 @@
+Three is a folder on your computer, most likely at
+
+C:\Riot Games\League of Legends\Config\Champions
+
+You want to either merge the new "Champions" folder into that folder, or replace it completely. 
