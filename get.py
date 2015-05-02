@@ -13,6 +13,7 @@ def get_champ(name):
         return "Unable to find {}".format(name)
     
     if shelf.has_key(name):
+        print "Already cached: " + name
         return shelf[name]
 
     url = "http://champion.gg/champion/" + name
@@ -101,6 +102,11 @@ def parse_starters(el):
         src = img['src']
         src = src[src.rindex('/') + 1:]
         item_id = int(src[:src.index('.')])
+        
+        # always use potion instead of biscuit - the game will show the right thing based on masteries
+        if item_id == 2010: # biscuit
+            item_id = 2003  # health pot
+        
         current = items.get(item_id, 0)
         items[item_id] = current + 1
     return items

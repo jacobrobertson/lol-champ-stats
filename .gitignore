@@ -11,6 +11,5 @@ __pycache__/
 venv/
 build/
 *.egg
-Champions/
 cache
 
