@@ -40,15 +40,18 @@ def get_champ(name):
 def get_role(page):
     data = {}
     
-    columns = page.select(".counter-column")
-    data['skills'] = get_skills(columns[0])
-    data['starters'] = get_starters(columns[4])
-    data['build'] = get_build(columns[3])
+    skills_columns = page.select(".champion-area") # .counter-column")
+    data['skills'] = get_skills(skills_columns[1]) # 0])
+    
+    data['starters'] = get_starters(page) # build_columns[1])
+    data['build'] = get_build(page) # build_columns[0])
     
     return data
 
 def get_skills(column):
     data = {}
+    
+    #print "get_skills {}".format(column)
     
     mf_skills = parse_skill_order(column.select(".skill-order")[0])
     mf_winrate = column.select(".build-text")[0].stripped_strings.next()
@@ -78,10 +81,10 @@ def parse_skill_order(el):
 def get_starters(column):
     data = {}
 
-    mf_starters = parse_starters(column.select(".build-wrapper")[0])
+    mf_starters = parse_starters(column.select(".build-wrapper")[2])
     mf_winrate = column.select(".build-text")[0].stripped_strings.next()
 
-    hw_starters = parse_starters(column.select(".build-wrapper")[1])
+    hw_starters = parse_starters(column.select(".build-wrapper")[3])
     hw_winrate = column.select(".build-text")[1].stripped_strings.next()
 
     #only add them both if they're not the same
