@@ -16,6 +16,7 @@ def get_champ(name):
         print "Already cached: " + name
         return shelf[name]
 
+    sleep(0.5)
     url = "http://champion.gg/champion/" + name
     page = BeautifulSoup(requests.get(url).content)
     
@@ -23,12 +24,18 @@ def get_champ(name):
     for link in page.select(".champion-profile ul li a"):
         roles.append(link.h3.string.strip())
     
+    if len(roles) < 1:
+        print "--- Couldn't find {}".format(name)
+        return
+    
     data = defaultdict(dict)
+    print "Parsing {}".format(name)
     data[roles[0]] = get_role(page)
     print "Parsed {} {}".format(name, roles[0])
     
     if len(roles) > 1:
         for role in roles[1:]:
+            print "Parsing {} {}".format(name, role)
             page = BeautifulSoup(requests.get(url + "/" + role).content)
             data[role] = get_role(page)
             print "Parsed {} {}".format(name, role)
@@ -41,6 +48,9 @@ def get_role(page):
     data = {}
     
     skills_columns = page.select(".champion-area") # .counter-column")
+    if len(skills_columns) < 2:
+        return data
+        
     data['skills'] = get_skills(skills_columns[1]) # 0])
     
     data['starters'] = get_starters(page) # build_columns[1])
@@ -132,5 +142,4 @@ def parse_build(el):
 if __name__ == "__main__":
     for champ in CHAMP_NAMES:
         get_champ(champ)
-        sleep(0.5)
     shelf.close()
