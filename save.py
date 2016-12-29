@@ -5,7 +5,7 @@ import os
 
 shelf = shelve.open("cache")
 
-patch = "6.1"
+patch = "6.24"
 
 def parse_champ(name):
     if name not in CHAMP_NAMES:
@@ -78,10 +78,14 @@ def maybe_append(items, item_id):
 
 def get_build(skills, s):
 
-    freq_text = skills['frequent']['order']
-    highest_text = skills['highest']['order']
-
     res = []
+
+    frequent_skills = skills.get('frequent', None)
+    if frequent_skills is None:
+        return res
+    
+    freq_text = frequent_skills['order']
+    highest_text = skills['highest']['order']
 
     for label in s.keys():
         d = s[label]

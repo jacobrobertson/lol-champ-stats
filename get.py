@@ -62,8 +62,11 @@ def get_skills(column):
     data = {}
     
     #print "get_skills {}".format(column)
+    skill_orders = column.select(".skill-order")
+    if len(skill_orders) < 1:
+        return data
     
-    mf_skills = parse_skill_order(column.select(".skill-order")[0])
+    mf_skills = parse_skill_order(skill_orders[0])
     mf_winrate = column.select(".build-text")[0].stripped_strings.next()
     data['frequent'] = {'order': mf_skills, 'win_rate': mf_winrate}
     
