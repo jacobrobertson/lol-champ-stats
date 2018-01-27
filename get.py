@@ -18,11 +18,16 @@ def get_champ(name):
 
     sleep(0.5)
     url = "http://champion.gg/champion/" + name
-    page = BeautifulSoup(requests.get(url).content)
+    r = requests.get(url)
+    page = BeautifulSoup(r.content)
+    
+    #print "Got this page {}".format(url)
+    #print "Got this URL from request {}".format(r.url)
+    #print page.text
     
     roles = []
-    for link in page.select(".champion-profile ul li a"):
-        roles.append(link.h3.string.strip())
+    for roleText in page.select(".champion-profile ul li a h3"):
+        roles.append(roleText.string.strip())
     
     if len(roles) < 1:
         print "--- Couldn't find {}".format(name)
@@ -94,10 +99,15 @@ def parse_skill_order(el):
 def get_starters(column):
     data = {}
 
-    mf_starters = parse_starters(column.select(".build-wrapper")[2])
+    # this happens when (for example), a particular role doesn't have enough data for the item sets
+    item_divs = column.select(".build-wrapper")
+    if len(item_divs) < 4:
+        return data;    
+
+    mf_starters = parse_starters(item_divs[2])
     mf_winrate = column.select(".build-text")[0].stripped_strings.next()
 
-    hw_starters = parse_starters(column.select(".build-wrapper")[3])
+    hw_starters = parse_starters(item_divs[3])
     hw_winrate = column.select(".build-text")[1].stripped_strings.next()
 
     #only add them both if they're not the same
