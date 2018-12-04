@@ -4,8 +4,7 @@ import json
 import os
 
 shelf = shelve.open("cache")
-
-patch = "8.2"
+patch = "8.23"
 
 def parse_champ(name):
     if name not in CHAMP_NAMES:
@@ -20,6 +19,7 @@ def parse_champ(name):
 
     for role in champ.keys():
         data = get_base(name, role)
+        print "champ[role] {}".format(champ[role])
         data['blocks'] += get_starters(champ[role]['starters'])
         data['blocks'] += get_build(champ[role]['skills'], champ[role]['build'])
         data['blocks'] += get_misc()
@@ -57,12 +57,14 @@ def get_starters(s):
 
 # add trinkets and wards for convenience
 def add_common_items(items):
-    maybe_append(items, "3340") # yellow
-    maybe_append(items, "3341") # red
-    maybe_append(items, "2044") # green
-    maybe_append(items, "2043") # pink
-    maybe_append(items, "2003") # health
-    maybe_append(items, "2004") # mana
+    maybe_append(items, "3340") # yellow trinket
+    maybe_append(items, "3341") # red trinket
+    maybe_append(items, "3363") # blue trinket
+    maybe_append(items, "2003") # health potion
+    maybe_append(items, "2004") # mana potion
+    maybe_append(items, "2031") # refillable potion
+    maybe_append(items, "2055") # control ward
+    maybe_append(items, "2047") # oracle's extract
     return items
 
 def maybe_append(items, item_id):

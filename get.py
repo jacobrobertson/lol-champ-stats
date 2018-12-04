@@ -12,13 +12,13 @@ def get_champ(name):
     if name not in CHAMP_NAMES:
         return "Unable to find {}".format(name)
     
-    if shelf.has_key(name):
-        print "Already cached: " + name
-        return shelf[name]
+#    if shelf.has_key(name):
+#        print "Already cached: " + name
+#        return shelf[name]
 
     sleep(0.5)
     url = "http://champion.gg/champion/" + name
-    r = requests.get(url)
+    r = requests.get(url + "?league=silver")
     page = BeautifulSoup(r.content)
     
     #print "Got this page {}".format(url)
@@ -34,18 +34,19 @@ def get_champ(name):
         return
     
     data = defaultdict(dict)
-    print "Parsing {}".format(name)
-    data[roles[0]] = get_role(page)
-    print "Parsed {} {}".format(name, roles[0])
+    #print "Parsing {}".format(name)
+    #data[roles[0]] = get_role(page)
+    #print "Parsed {} {}".format(name, roles[0])
     
-    if len(roles) > 1:
-        for role in roles[1:]:
-            print "Parsing {} {}".format(name, role)
-            page = BeautifulSoup(requests.get(url + "/" + role).content)
-            data[role] = get_role(page)
-            print "Parsed {} {}".format(name, role)
+    #if len(roles) > :
+    for role in roles[0:]:
+        print "Parsing {} {}".format(name, role)
+        page = BeautifulSoup(requests.get(url + "/" + role + "?league=silver").content)
+        data[role] = get_role(page)
+        print "Parsed {} {} {}".format(name, role, data[role])
 
     shelf[name] = dict(data)
+
 
     return dict(data)
 
@@ -99,15 +100,20 @@ def parse_skill_order(el):
 def get_starters(column):
     data = {}
 
-    # this happens when (for example), a particular role doesn't have enough data for the item sets
     item_divs = column.select(".build-wrapper")
-    if len(item_divs) < 4:
-        return data;    
 
-    mf_starters = parse_starters(item_divs[2])
+    # check how many item rows we have - if there are only two, just use those (better than nothing...)
+    itemRows = len(item_divs)
+    rowIndex = 2
+    
+    if itemRows == 2:
+        rowIndex = 0
+
+    mf_starters = parse_starters(item_divs[rowIndex])
+    rowIndex = rowIndex + 1
     mf_winrate = column.select(".build-text")[0].stripped_strings.next()
 
-    hw_starters = parse_starters(item_divs[3])
+    hw_starters = parse_starters(item_divs[rowIndex])
     hw_winrate = column.select(".build-text")[1].stripped_strings.next()
 
     #only add them both if they're not the same
@@ -153,6 +159,11 @@ def parse_build(el):
     return [int(x) for x in parse_starters(el).keys()]
 
 if __name__ == "__main__":
+    
+    getAll = True
+    oneChamp = 'Lissandra'
+    
     for champ in CHAMP_NAMES:
-        get_champ(champ)
+        if (getAll or (champ == oneChamp)):
+            get_champ(champ)
     shelf.close()
